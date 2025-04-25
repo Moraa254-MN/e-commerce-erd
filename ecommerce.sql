@@ -1,78 +1,101 @@
-Table product {
-  product_id int [pk, increment]
-  name varchar
-  brand_id int [ref: > brand.brand_id]
-  category_id int [ref: > product_category.category_id]
-  base_price decimal
-  description text
-}
+-- 1. Brand Table
+CREATE TABLE brand (
+    brand_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
 
-Table brand {
-  brand_id int [pk, increment]
-  name varchar
-  description text
-}
+-- 2. Product Category Table
+CREATE TABLE product_category (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT
+);
 
-Table product_category {
-  category_id int [pk, increment]
-  name varchar
-  description text
-}
+-- 3. Product Table
+CREATE TABLE product (
+    product_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(150) NOT NULL,
+    brand_id INT,
+    category_id INT,
+    base_price DECIMAL(10,2),
+    description TEXT,
+    FOREIGN KEY (brand_id) REFERENCES brand(brand_id),
+    FOREIGN KEY (category_id) REFERENCES product_category(category_id)
+);
 
-Table product_image {
-  image_id int [pk, increment]
-  product_id int [ref: > product.product_id]
-  image_url varchar
-  alt_text varchar
-}
+-- 4. Product Image Table
+CREATE TABLE product_image (
+    image_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    alt_text VARCHAR(255),
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
 
-Table color {
-  color_id int [pk, increment]
-  name varchar
-  hex_value varchar
-}
+-- 5. Color Table
+CREATE TABLE color (
+    color_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    hex_value VARCHAR(7)
+);
 
-Table size_category {
-  size_category_id int [pk, increment]
-  name varchar
-}
+-- 6. Size Category Table
+CREATE TABLE size_category (
+    size_category_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
 
-Table size_option {
-  size_id int [pk, increment]
-  size_category_id int [ref: > size_category.size_category_id]
-  label varchar
-}
+-- 7. Size Option Table
+CREATE TABLE size_option (
+    size_id INT PRIMARY KEY AUTO_INCREMENT,
+    size_category_id INT NOT NULL,
+    label VARCHAR(20) NOT NULL,
+    FOREIGN KEY (size_category_id) REFERENCES size_category(size_category_id)
+);
 
-Table product_variation {
-  variation_id int [pk, increment]
-  product_id int [ref: > product.product_id]
-  color_id int [ref: > color.color_id]
-  size_id int [ref: > size_option.size_id]
-}
+-- 8. Product Variation Table
+CREATE TABLE product_variation (
+    variation_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    color_id INT,
+    size_id INT,
+    FOREIGN KEY (product_id) REFERENCES product(product_id),
+    FOREIGN KEY (color_id) REFERENCES color(color_id),
+    FOREIGN KEY (size_id) REFERENCES size_option(size_id)
+);
 
-Table product_item {
-  item_id int [pk, increment]
-  variation_id int [ref: > product_variation.variation_id]
-  sku varchar
-  stock_quantity int
-  price_override decimal
-}
+-- 9. Product Item Table
+CREATE TABLE product_item (
+    item_id INT PRIMARY KEY AUTO_INCREMENT,
+    variation_id INT NOT NULL,
+    sku VARCHAR(50) NOT NULL UNIQUE,
+    stock_quantity INT NOT NULL,
+    price_override DECIMAL(10,2),
+    FOREIGN KEY (variation_id) REFERENCES product_variation(variation_id)
+);
 
-Table attribute_type {
-  type_id int [pk, increment]
-  name varchar
-}
+-- 10. Attribute Type Table
+CREATE TABLE attribute_type (
+    type_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
 
-Table attribute_category {
-  attribute_category_id int [pk, increment]
-  name varchar
-}
+-- 11. Attribute Category Table
+CREATE TABLE attribute_category (
+    attribute_category_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
 
-Table product_attribute {
-  attribute_id int [pk, increment]
-  product_id int [ref: > product.product_id]
-  name varchar
-  value varchar
-  type_id int [ref: > attribute_type.type_id]
-  category_id int [ref: > attribute_category.attribute_category_id]
-}
+-- 12. Product Attribute Table
+CREATE TABLE product_attribute (
+    attribute_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    type_id INT NOT NULL,
+    category_id INT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES product(product_id),
+    FOREIGN KEY (type_id) REFERENCES attribute_type(type_id),
+    FOREIGN KEY (category_id) REFERENCES attribute_category(attribute_category_id)
+);
