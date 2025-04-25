@@ -19,3 +19,8 @@ Database: e_commerce_db
 CREATE DATABASE IF NOT EXISTS e_commerce_db;
 USE e_commerce_db;
 
+## 🗺️ ERD Diagram
+
+![ERD Diagram](.erd-diagram.png)
+
+This diagram outlines the core entities and relationships used in the e-commerce database.
